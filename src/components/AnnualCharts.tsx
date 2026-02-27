@@ -12,10 +12,11 @@ import {
 
 import { buildAnnualTimeline } from "../utils/annualTimeline";
 import { PLAYERS } from "../config/poker";
-import type { CsvRow } from "../types/poker";
+import type { CsvRow, PlayerId } from "../types/poker";
 
 type Props = {
   csvRows: CsvRow[];
+  highlightPlayerId?: PlayerId | null;
 };
 
 const formatJornada = (label: unknown) => {
@@ -184,7 +185,21 @@ function RankingTooltip({
   );
 }
 
-export default function AnnualCharts({ csvRows }: Props) {
+function getLineColor(
+  playerId: PlayerId,
+  playerColor: string,
+  highlightPlayerId?: PlayerId | null
+) {
+  if (!highlightPlayerId) return playerColor;
+  return playerId === highlightPlayerId ? playerColor : "#f5f5f5";
+}
+
+function getLineOpacity(playerId: PlayerId, highlightPlayerId?: PlayerId | null) {
+  if (!highlightPlayerId) return 1;
+  return playerId === highlightPlayerId ? 1 : 0.45;
+}
+
+export default function AnnualCharts({ csvRows, highlightPlayerId = null }: Props) {
   const data = useMemo(() => buildAnnualTimeline(csvRows), [csvRows]);
 
   if (!data.length) {
@@ -205,17 +220,23 @@ export default function AnnualCharts({ csvRows }: Props) {
               <Tooltip content={<ProfitTooltip data={data} />} />
               <Legend />
 
-              {PLAYERS.map((player) => (
-                <Line
-                  key={`${player.id}-profit`}
-                  type="monotone"
-                  dataKey={`${player.id}€`}
-                  name={player.label}
-                  stroke={player.color}
-                  strokeWidth={3}
-                  dot={false}
-                />
-              ))}
+              {PLAYERS.map((player) => {
+                const stroke = getLineColor(player.id, player.color, highlightPlayerId);
+                const opacity = getLineOpacity(player.id, highlightPlayerId);
+
+                return (
+                  <Line
+                    key={`${player.id}-profit`}
+                    type="monotone"
+                    dataKey={`${player.id}€`}
+                    name={player.label}
+                    stroke={stroke}
+                    strokeWidth={player.id === highlightPlayerId ? 4 : 2.5}
+                    strokeOpacity={opacity}
+                    dot={false}
+                  />
+                );
+              })}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -233,18 +254,28 @@ export default function AnnualCharts({ csvRows }: Props) {
               <Tooltip content={<RankingTooltip />} />
               <Legend />
 
-              {PLAYERS.map((player) => (
-                <Line
-                  key={`${player.id}-rank`}
-                  type="monotone"
-                  dataKey={`${player.id}Rank`}
-                  name={player.label}
-                  stroke={player.color}
-                  strokeWidth={3}
-                  dot={{ r: 5, fill: player.color }}
-                  activeDot={{ r: 8 }}
-                />
-              ))}
+              {PLAYERS.map((player) => {
+                const stroke = getLineColor(player.id, player.color, highlightPlayerId);
+                const opacity = getLineOpacity(player.id, highlightPlayerId);
+
+                return (
+                  <Line
+                    key={`${player.id}-rank`}
+                    type="monotone"
+                    dataKey={`${player.id}Rank`}
+                    name={player.label}
+                    stroke={stroke}
+                    strokeWidth={player.id === highlightPlayerId ? 4 : 2.5}
+                    strokeOpacity={opacity}
+                    dot={{
+                      r: player.id === highlightPlayerId ? 6 : 4,
+                      fill: stroke,
+                      stroke: stroke,
+                    }}
+                    activeDot={{ r: player.id === highlightPlayerId ? 8 : 6 }}
+                  />
+                );
+              })}
             </LineChart>
           </ResponsiveContainer>
         </div>

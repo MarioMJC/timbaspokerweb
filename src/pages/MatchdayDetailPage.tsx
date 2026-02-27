@@ -1,6 +1,8 @@
 import { Link, useParams } from "react-router-dom";
+import { SEASON_BY_ID } from "../config/poker";
 import MatchdayResultsTable from "../components/MatchdayResultsTable";
 import { buildMatchdayDetail, buildMatchdayNarrative } from "../utils/matchdays";
+import { getSeasonStatusClass, getSeasonStatusLabel } from "../utils/seasonMeta";
 import type { SeasonRows } from "../types/poker";
 
 type Props = {
@@ -17,6 +19,8 @@ export default function MatchdayDetailPage({ rowsBySeason }: Props) {
     Number.isFinite(jornada) && seasonId
       ? buildMatchdayDetail(rowsBySeason[seasonId] ?? [], seasonId, jornada)
       : null;
+
+  const season = seasonId ? SEASON_BY_ID[seasonId] : null;
 
   if (!detail) {
     return (
@@ -46,12 +50,21 @@ export default function MatchdayDetailPage({ rowsBySeason }: Props) {
         {detail.seasonLabel} · Jornada {detail.jornada}
       </h2>
 
+      {season && (
+        <div className="season-page-meta">
+          <span className={`season-status-badge ${getSeasonStatusClass(season.status)}`}>
+            {getSeasonStatusLabel(season.status)}
+          </span>
+          <span className="season-duration-text">{season.dateRangeLabel}</span>
+        </div>
+      )}
+
       <p className="page-subtitle">
         Ganador del día: <strong>{detail.winnerLabel}</strong>
         {detail.winnerProfit != null ? ` · ${detail.winnerProfit.toFixed(2)} €` : ""}
       </p>
 
-      <div className="season-summary-grid">
+      <div className="season-summary-grid compact-season-summary-grid">
         <div className="season-summary-card">
           <div className="season-summary-label">GANADOR</div>
           <div className="season-summary-value">{detail.winnerLabel}</div>
@@ -60,6 +73,13 @@ export default function MatchdayDetailPage({ rowsBySeason }: Props) {
         <div className="season-summary-card">
           <div className="season-summary-label">LÍDER TRAS LA JORNADA</div>
           <div className="season-summary-value">{detail.leaderAfterMatchLabel}</div>
+        </div>
+
+        <div className="season-summary-card">
+          <div className="season-summary-label">DURACIÓN</div>
+          <div className="season-summary-value season-summary-value-small">
+            {season?.dateRangeLabel ?? "—"}
+          </div>
         </div>
 
         <div className="season-summary-card">

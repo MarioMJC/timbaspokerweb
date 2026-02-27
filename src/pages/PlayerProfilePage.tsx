@@ -103,6 +103,7 @@ export default function PlayerProfilePage({ rowsBySeason, statsBySeason }: Props
         onChangeSeason={setSeasonId}
         rowsBySeason={rowsBySeason}
         title={`EVOLUCIÓN DE ${player.label.toUpperCase()}`}
+        highlightPlayerId={playerId}
       />
 
       <PlayerHistoryTable rows={history} />
