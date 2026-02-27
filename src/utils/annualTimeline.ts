@@ -1,32 +1,30 @@
-import { PLAYER_KEYS } from "../config/poker";
-import type { PlayerKey, CsvRow, TimelinePoint } from "../types/poker";
-import { parseJornada, parseMoney, parsePosition } from "../lib/csv";
+import { PLAYER_IDS, PLAYERS } from "../config/poker";
+import type { PlayerId, CsvRow, TimelinePoint } from "../types/poker";
+import { parseJornada, parseMoney } from "../lib/csv";
 
 function computeAccumulatedRanks(
-  cumulativeProfits: Record<PlayerKey, number>
-): Record<PlayerKey, number> {
-  const sorted = [...PLAYER_KEYS].sort((a, b) => {
+  cumulativeProfits: Record<PlayerId, number>
+): Record<PlayerId, number> {
+  const sorted = [...PLAYER_IDS].sort((a, b) => {
     const diff = cumulativeProfits[b] - cumulativeProfits[a];
     if (diff !== 0) return diff;
-    return PLAYER_KEYS.indexOf(a) - PLAYER_KEYS.indexOf(b);
+    return PLAYER_IDS.indexOf(a) - PLAYER_IDS.indexOf(b);
   });
 
-  const rankMap = {} as Record<PlayerKey, number>;
+  const rankMap = {} as Record<PlayerId, number>;
 
-  sorted.forEach((player, index) => {
-    rankMap[player] = index + 1;
+  sorted.forEach((playerId, index) => {
+    rankMap[playerId] = index + 1;
   });
 
   return rankMap;
 }
 
 export function buildAnnualTimeline(rows: CsvRow[]): TimelinePoint[] {
-  const cumulativeProfits: Record<PlayerKey, number> = {
-    Mario: 0,
-    Álvaro: 0,
-    Joselu: 0,
-    Gonzalo: 0,
-  };
+  const cumulativeProfits = PLAYERS.reduce<Record<PlayerId, number>>((acc, player) => {
+    acc[player.id] = 0;
+    return acc;
+  }, {});
 
   const points: TimelinePoint[] = [];
 
@@ -34,10 +32,10 @@ export function buildAnnualTimeline(rows: CsvRow[]): TimelinePoint[] {
     const jornada = parseJornada(row["Partidas"]);
     if (!jornada) continue;
 
-    for (const player of PLAYER_KEYS) {
-      const profit = parseMoney(row[player]);
+    for (const player of PLAYERS) {
+      const profit = parseMoney(row[player.csvName]);
       if (profit !== null) {
-        cumulativeProfits[player] += profit;
+        cumulativeProfits[player.id] += profit;
       }
     }
 
@@ -45,12 +43,9 @@ export function buildAnnualTimeline(rows: CsvRow[]): TimelinePoint[] {
 
     const point: TimelinePoint = { jornada };
 
-    for (const player of PLAYER_KEYS) {
-      const jornadaPosition = parsePosition(row[`Posiciones ${player}`]);
-
-      point[`${player}€`] = cumulativeProfits[player];
-      point[`${player}Pos`] = jornadaPosition;
-      point[`${player}Rank`] = accumulatedRanks[player];
+    for (const player of PLAYERS) {
+      point[`${player.id}€`] = cumulativeProfits[player.id];
+      point[`${player.id}Rank`] = accumulatedRanks[player.id];
     }
 
     points.push(point);

@@ -1,13 +1,12 @@
-import { SEASON_CONFIG, SUMMARY_CSV_PATH } from "../config/poker";
+import { DEFAULT_SEASON_ID, SEASONS, SUMMARY_CSV_PATH } from "../config/poker";
 import type { SeasonRows, SummaryStats } from "../types/poker";
 import { fetchCsv, parseMoney, pickHeader } from "../lib/csv";
 
 function createEmptySeasonRows(): SeasonRows {
-  return {
-    ANUAL: [],
-    WINTER: [],
-    SPRING: [],
-  };
+  return SEASONS.reduce<SeasonRows>((acc, season) => {
+    acc[season.id] = [];
+    return acc;
+  }, { [DEFAULT_SEASON_ID]: [] });
 }
 
 function extractSummary(rows: Record<string, string>[]): SummaryStats {
@@ -45,16 +44,18 @@ export async function loadPokerData(): Promise<{
 }> {
   const rowsBySeason = createEmptySeasonRows();
 
-  const [annualRows, winterRows, springRows, summaryRows] = await Promise.all([
-    fetchCsv(SEASON_CONFIG.ANUAL.dataPath),
-    fetchCsv(SEASON_CONFIG.WINTER.dataPath),
-    fetchCsv(SEASON_CONFIG.SPRING.dataPath),
-    fetchCsv(SUMMARY_CSV_PATH),
-  ]);
+  const seasonRows = await Promise.all(
+    SEASONS.map(async (season) => ({
+      id: season.id,
+      rows: await fetchCsv(season.dataPath),
+    }))
+  );
 
-  rowsBySeason.ANUAL = annualRows;
-  rowsBySeason.WINTER = winterRows;
-  rowsBySeason.SPRING = springRows;
+  const summaryRows = await fetchCsv(SUMMARY_CSV_PATH);
+
+  for (const season of seasonRows) {
+    rowsBySeason[season.id] = season.rows;
+  }
 
   return {
     rowsBySeason,

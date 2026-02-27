@@ -1,74 +1,68 @@
 import { useEffect, useMemo, useState } from "react";
-import type { PlayerKey, PlayerStats, SeasonKey } from "../types/poker";
+import type { PlayerId, PlayerStats, SeasonId } from "../types/poker";
+import { DEFAULT_SEASON_ID, SEASONS } from "../config/poker";
 import { getRank } from "../utils/pokerStats";
-import { SEASON_CONFIG } from "../config/poker";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  player: PlayerKey | null;
-  statsAnnualSorted: PlayerStats[];
-  statsWinterSorted: PlayerStats[];
-  statsSpringSorted: PlayerStats[];
+  playerId: PlayerId | null;
+  statsBySeason: Record<SeasonId, PlayerStats[]>;
 };
 
 export default function PlayerModal({
   open,
   onClose,
-  player,
-  statsAnnualSorted,
-  statsWinterSorted,
-  statsSpringSorted,
+  playerId,
+  statsBySeason,
 }: Props) {
-  const [season, setSeason] = useState<SeasonKey>("ANUAL");
+  const [seasonId, setSeasonId] = useState<SeasonId>(DEFAULT_SEASON_ID);
 
   useEffect(() => {
     if (open) {
-      setSeason("ANUAL");
+      setSeasonId(DEFAULT_SEASON_ID);
     }
-  }, [open, player]);
+  }, [open, playerId]);
 
   const seasonStats = useMemo(() => {
-    if (season === "WINTER") return statsWinterSorted;
-    if (season === "SPRING") return statsSpringSorted;
-    return statsAnnualSorted;
-  }, [season, statsAnnualSorted, statsWinterSorted, statsSpringSorted]);
+    return statsBySeason[seasonId] ?? [];
+  }, [seasonId, statsBySeason]);
 
   const current = useMemo(() => {
-    if (!player) return null;
-    return seasonStats.find((x) => x.player === player) ?? null;
-  }, [player, seasonStats]);
+    if (!playerId) return null;
+    return seasonStats.find((x) => x.playerId === playerId) ?? null;
+  }, [playerId, seasonStats]);
 
-  if (!open || !player) return null;
+  if (!open || !playerId) return null;
 
-  const totalPlayers = seasonStats.length || 4;
-  const rank = seasonStats.length ? getRank(seasonStats, player) : totalPlayers;
+  const totalPlayers = seasonStats.length || 1;
+  const rank = seasonStats.length ? getRank(seasonStats, playerId) : totalPlayers;
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
       <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <div className="modal-header">
-          <h2>{player}</h2>
+          <h2>{current?.playerLabel ?? playerId}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Cerrar">
             ✕
           </button>
         </div>
 
         <div className="season-tabs">
-          {Object.values(SEASON_CONFIG).map((seasonItem) => (
+          {SEASONS.map((season) => (
             <button
-              key={seasonItem.key}
+              key={season.id}
               type="button"
-              className={`season-tab ${season === seasonItem.key ? "active" : ""}`}
-              onClick={() => setSeason(seasonItem.key)}
+              className={`season-tab ${seasonId === season.id ? "active" : ""}`}
+              onClick={() => setSeasonId(season.id)}
             >
-              {seasonItem.label}
+              {season.label}
             </button>
           ))}
         </div>
 
         {!current ? (
-          <p className="muted">No hay datos para {season}.</p>
+          <p className="muted">No hay datos para esta temporada.</p>
         ) : (
           <div className="modal-grid">
             <div className="stat">

@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import { buildAnnualTimeline } from "../utils/annualTimeline";
-import { PLAYER_KEYS, PLAYER_META } from "../config/poker";
+import { PLAYERS } from "../config/poker";
 import type { CsvRow } from "../types/poker";
 
 type Props = {
@@ -63,14 +63,15 @@ function ProfitTooltip({
   const jornada = getNumber(label);
   const row = data.find((r) => Number(r.jornada) === jornada) ?? null;
 
-  const items = PLAYER_KEYS.map((player) => {
-    const point = payload.find((x) => x.dataKey === `${player}€`);
+  const items = PLAYERS.map((player) => {
+    const point = payload.find((x) => x.dataKey === `${player.id}€`);
     const euro = point ? getNumber(point.value) : null;
-    const rank = row ? getNumber(row[`${player}Rank`]) : null;
+    const rank = row ? getNumber(row[`${player.id}Rank`]) : null;
 
     return {
-      name: player,
-      color: PLAYER_META[player].color,
+      id: player.id,
+      name: player.label,
+      color: player.color,
       euro,
       rank,
     };
@@ -100,7 +101,7 @@ function ProfitTooltip({
 
       {items.map((item) => (
         <div
-          key={item.name}
+          key={item.id}
           style={{
             display: "flex",
             justifyContent: "space-between",
@@ -138,15 +139,11 @@ function RankingTooltip({
 
   const items = payload
     .map((p) => {
-      const player = String(p.name);
-      const color =
-        player in PLAYER_META
-          ? PLAYER_META[player as keyof typeof PLAYER_META].color
-          : "#fff";
+      const player = PLAYERS.find((x) => x.label === String(p.name));
 
       return {
-        name: player,
-        color,
+        name: String(p.name),
+        color: player?.color ?? "#fff",
         rank: getNumber(p.value),
       };
     })
@@ -208,13 +205,13 @@ export default function AnnualCharts({ csvRows }: Props) {
               <Tooltip content={<ProfitTooltip data={data} />} />
               <Legend />
 
-              {PLAYER_KEYS.map((player) => (
+              {PLAYERS.map((player) => (
                 <Line
-                  key={`${player}-profit`}
+                  key={`${player.id}-profit`}
                   type="monotone"
-                  dataKey={`${player}€`}
-                  name={player}
-                  stroke={PLAYER_META[player].color}
+                  dataKey={`${player.id}€`}
+                  name={player.label}
+                  stroke={player.color}
                   strokeWidth={3}
                   dot={false}
                 />
@@ -232,19 +229,19 @@ export default function AnnualCharts({ csvRows }: Props) {
             <LineChart data={data} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="jornada" tickFormatter={formatJornadaTick} />
-              <YAxis reversed domain={[4, 1]} allowDecimals={false} />
+              <YAxis reversed domain={[PLAYERS.length, 1]} allowDecimals={false} />
               <Tooltip content={<RankingTooltip />} />
               <Legend />
 
-              {PLAYER_KEYS.map((player) => (
+              {PLAYERS.map((player) => (
                 <Line
-                  key={`${player}-rank`}
+                  key={`${player.id}-rank`}
                   type="monotone"
-                  dataKey={`${player}Rank`}
-                  name={player}
-                  stroke={PLAYER_META[player].color}
+                  dataKey={`${player.id}Rank`}
+                  name={player.label}
+                  stroke={player.color}
                   strokeWidth={3}
-                  dot={{ r: 5, fill: PLAYER_META[player].color }}
+                  dot={{ r: 5, fill: player.color }}
                   activeDot={{ r: 8 }}
                 />
               ))}

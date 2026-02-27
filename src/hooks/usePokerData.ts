@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
+import { DEFAULT_SEASON_ID, SEASONS } from "../config/poker";
 import { loadPokerData } from "../data/pokerData";
 import type { SeasonRows, SummaryStats } from "../types/poker";
 
 function createEmptySeasonRows(): SeasonRows {
-  return {
-    ANUAL: [],
-    WINTER: [],
-    SPRING: [],
-  };
+  return SEASONS.reduce<SeasonRows>((acc, season) => {
+    acc[season.id] = [];
+    return acc;
+  }, { [DEFAULT_SEASON_ID]: [] });
 }
 
 export function usePokerData() {

@@ -4,11 +4,16 @@ import "./App.css";
 import AnnualCharts from "./components/AnnualCharts";
 import PlayerModal from "./components/PlayerModal";
 
-import { PLAYER_META, SEASON_CONFIG, SOCIAL_LINKS } from "./config/poker";
+import {
+  DEFAULT_SEASON_ID,
+  PLAYER_BY_ID,
+  SEASONS,
+  SOCIAL_LINKS,
+} from "./config/poker";
 import { usePokerData } from "./hooks/usePokerData";
 import { computeAllStats, getRank } from "./utils/pokerStats";
 
-import type { PlayerKey, SeasonKey } from "./types/poker";
+import type { PlayerId, PlayerStats, SeasonId } from "./types/poker";
 
 function rankLabel(rank: number, total: number) {
   if (rank === 1) return "PRIMERO";
@@ -21,34 +26,34 @@ function rankLabel(rank: number, total: number) {
 export default function App() {
   const { rowsBySeason, summary, loading, error } = usePokerData();
 
-  const [selected, setSelected] = useState<PlayerKey | null>(null);
-  const [chartSeason, setChartSeason] = useState<SeasonKey>("ANUAL");
-
-  const statsAnnualSorted = useMemo(() => computeAllStats(rowsBySeason.ANUAL), [rowsBySeason.ANUAL]);
-  const statsWinterSorted = useMemo(() => computeAllStats(rowsBySeason.WINTER), [rowsBySeason.WINTER]);
-  const statsSpringSorted = useMemo(() => computeAllStats(rowsBySeason.SPRING), [rowsBySeason.SPRING]);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<PlayerId | null>(null);
+  const [chartSeasonId, setChartSeasonId] = useState<SeasonId>(DEFAULT_SEASON_ID);
 
   const statsBySeason = useMemo(() => {
-    if (chartSeason === "WINTER") return statsWinterSorted;
-    if (chartSeason === "SPRING") return statsSpringSorted;
-    return statsAnnualSorted;
-  }, [chartSeason, statsAnnualSorted, statsWinterSorted, statsSpringSorted]);
+    return SEASONS.reduce<Record<SeasonId, PlayerStats[]>>((acc, season) => {
+      acc[season.id] = computeAllStats(rowsBySeason[season.id] ?? []);
+      return acc;
+    }, {});
+  }, [rowsBySeason]);
+
+  const currentSeasonStats = statsBySeason[chartSeasonId] ?? [];
 
   const orderedPlayers = useMemo(() => {
-    return statsBySeason.map((stats) => {
-      const rank = getRank(statsBySeason, stats.player);
+    return currentSeasonStats.map((stats) => {
+      const meta = PLAYER_BY_ID[stats.playerId];
+      const rank = getRank(currentSeasonStats, stats.playerId);
 
       return {
-        player: stats.player,
-        label: PLAYER_META[stats.player].label,
-        img: PLAYER_META[stats.player].img,
+        playerId: stats.playerId,
+        label: meta?.label ?? stats.playerLabel,
+        img: meta?.img ?? "",
         rank,
-        rankText: rankLabel(rank, statsBySeason.length),
+        rankText: rankLabel(rank, currentSeasonStats.length),
       };
     });
-  }, [statsBySeason]);
+  }, [currentSeasonStats]);
 
-  const chartRows = rowsBySeason[chartSeason];
+  const chartRows = rowsBySeason[chartSeasonId] ?? [];
 
   return (
     <div className="main-container">
@@ -93,9 +98,9 @@ export default function App() {
           <div className="players-row">
             {orderedPlayers.map((player) => (
               <button
-                key={player.player}
+                key={player.playerId}
                 className={`player-card rank-${player.rank}`}
-                onClick={() => setSelected(player.player)}
+                onClick={() => setSelectedPlayerId(player.playerId)}
                 type="button"
                 aria-label={`Ver estadísticas de ${player.label}`}
               >
@@ -110,11 +115,11 @@ export default function App() {
             <h2 className="charts-title">GRÁFICAS</h2>
 
             <div className="charts-buttons">
-              {Object.values(SEASON_CONFIG).map((season) => (
+              {SEASONS.map((season) => (
                 <button
-                  key={season.key}
-                  className={`season-tab ${chartSeason === season.key ? "active" : ""}`}
-                  onClick={() => setChartSeason(season.key)}
+                  key={season.id}
+                  className={`season-tab ${chartSeasonId === season.id ? "active" : ""}`}
+                  onClick={() => setChartSeasonId(season.id)}
                   type="button"
                 >
                   {season.label}
@@ -128,12 +133,10 @@ export default function App() {
       )}
 
       <PlayerModal
-        open={selected !== null}
-        onClose={() => setSelected(null)}
-        player={selected}
-        statsAnnualSorted={statsAnnualSorted}
-        statsWinterSorted={statsWinterSorted}
-        statsSpringSorted={statsSpringSorted}
+        open={selectedPlayerId !== null}
+        onClose={() => setSelectedPlayerId(null)}
+        playerId={selectedPlayerId}
+        statsBySeason={statsBySeason}
       />
     </div>
   );
