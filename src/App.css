@@ -13,7 +13,8 @@ body,
 }
 
 body {
-  display: block; /* mata el flex del CSS de Vite si estuviera activo */
+  display: block;
+  /* mata el flex del CSS de Vite si estuviera activo */
   background: radial-gradient(circle at top, #1a0000, #000000 70%);
   font-family: Arial, Helvetica, sans-serif;
   color: white;
@@ -76,13 +77,11 @@ body {
 
 /* Instagram */
 .social-btn.instagram {
-  background: linear-gradient(
-    45deg,
-    #f58529,
-    #dd2a7b,
-    #8134af,
-    #515bd4
-  );
+  background: linear-gradient(45deg,
+      #f58529,
+      #dd2a7b,
+      #8134af,
+      #515bd4);
   color: white;
 }
 
@@ -132,12 +131,14 @@ body {
   gap: 60px;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap; /* si no cabe, hace wrap en pantallas medianas */
+  flex-wrap: wrap;
+  /* si no cabe, hace wrap en pantallas medianas */
 }
 
 /* Tarjeta de jugador (button) */
 .player-card {
-  position: relative; /* ✅ para colocar el badge encima */
+  position: relative;
+  /* ✅ para colocar el badge encima */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -171,9 +172,12 @@ body {
 .player-card img {
   width: 320px;
   height: 320px;
-  object-fit: cover; /* recorta proporcional */
-  object-position: center; /* centra la cara */
-  border-radius: 20px; /* cuadrados con bordes redondeados */
+  object-fit: cover;
+  /* recorta proporcional */
+  object-position: center;
+  /* centra la cara */
+  border-radius: 20px;
+  /* cuadrados con bordes redondeados */
   border: 3px solid #ff1a1a;
   box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
   transition: 0.3s ease;
@@ -245,6 +249,7 @@ body {
 
 /* Animación neón */
 @keyframes neonFlicker {
+
   0%,
   18%,
   22%,
@@ -352,6 +357,15 @@ body {
   gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 14px;
+}
+
+.season-status-badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
 }
 
 .season-tab {
@@ -844,6 +858,74 @@ body {
   margin: 8px 0 22px;
 }
 
+.season-meta-strip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.title-submessage {
+  text-align: center;
+  margin: 10px 0 18px;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #39ff14;
+  text-shadow:
+    0 0 4px #7dff5a,
+    0 0 10px #7dff5a,
+    0 0 20px rgba(125, 255, 90, 1),
+    0 0 40px rgba(125, 255, 90, 0.9),
+    0 0 70px rgba(125, 255, 90, 0.7);
+}
+
+@keyframes kickGlowPulse {
+  0% {
+    color: #7dff5a;
+    text-shadow:
+      0 0 4px #7dff5a,
+      0 0 10px #7dff5a,
+      0 0 20px rgba(125, 255, 90, 0.9),
+      0 0 40px rgba(125, 255, 90, 0.7),
+      0 0 70px rgba(125, 255, 90, 0.45);
+  }
+
+  50% {
+    color: #b8ff9f;
+    text-shadow:
+      0 0 6px #b8ff9f,
+      0 0 14px #7dff5a,
+      0 0 28px rgba(125, 255, 90, 1),
+      0 0 52px rgba(125, 255, 90, 0.95),
+      0 0 86px rgba(125, 255, 90, 0.75);
+  }
+
+  100% {
+    color: #7dff5a;
+    text-shadow:
+      0 0 4px #7dff5a,
+      0 0 10px #7dff5a,
+      0 0 20px rgba(125, 255, 90, 0.9),
+      0 0 40px rgba(125, 255, 90, 0.7),
+      0 0 70px rgba(125, 255, 90, 0.45);
+  }
+}
+
+.title-submessage-kick {
+  color: #7dff5a;
+  text-shadow:
+    0 0 4px #7dff5a,
+    0 0 10px #7dff5a,
+    0 0 20px rgba(125, 255, 90, 1),
+    0 0 40px rgba(125, 255, 90, 0.9),
+    0 0 70px rgba(125, 255, 90, 0.7);
+  animation: kickGlowPulse 1.8s ease-in-out infinite;
+}
+
 .season-status-badge {
   display: inline-flex;
   align-items: center;
@@ -854,6 +936,14 @@ body {
   font-size: 0.8rem;
   letter-spacing: 0.03em;
   border: 1px solid transparent;
+}
+
+.season-date-range {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .season-status-badge.active {
@@ -1049,7 +1139,8 @@ body {
   }
 
   .players-row {
-    flex-direction: column; /* pasa de fila a columna */
+    flex-direction: column;
+    /* pasa de fila a columna */
     gap: 22px;
   }
 

@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { DEFAULT_SEASON_ID, SEASONS } from "../config/poker";
+import { DEFAULT_SEASON_ID, SEASON_BY_ID, SEASONS } from "../config/poker";
 import SeasonChartsPanel from "../components/SeasonChartsPanel";
 import { buildSeasonSummary } from "../utils/seasonSummary";
+import { getSeasonStatusClass, getSeasonStatusLabel } from "../utils/seasonMeta";
 import type { PlayerStats, SeasonId, SeasonRows } from "../types/poker";
 
 type Props = {
@@ -16,8 +17,10 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
     return buildSeasonSummary(statsBySeason[seasonId] ?? []);
   }, [seasonId, statsBySeason]);
 
-  const selectedSeason = SEASONS.find((season) => season.id === seasonId);
+  const selectedSeason = SEASON_BY_ID[seasonId];
   const isFinished = selectedSeason?.status === "finished";
+  const statusLabel = getSeasonStatusLabel(selectedSeason?.status);
+  const statusClass = getSeasonStatusClass(selectedSeason?.status);
 
   return (
     <section className="page-section">
@@ -26,11 +29,36 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
         Compara la evolución global de cada temporada y su clasificación.
       </p>
 
+      <div className="season-meta-strip">
+        <div className={`season-status-badge ${statusClass}`}>{statusLabel}</div>
+        <div className="season-date-range">
+          {selectedSeason?.dateRangeLabel ?? "Duración no definida"}
+        </div>
+      </div>
+
+      <div className="charts-buttons">
+        {SEASONS.map((season) => (
+          <button
+            key={season.id}
+            className={`season-tab ${seasonId === season.id ? "active" : ""}`}
+            onClick={() => setSeasonId(season.id)}
+            type="button"
+          >
+            {season.label}
+          </button>
+        ))}
+      </div>
+
       <div className="season-summary-grid">
         <div className="season-summary-card">
           <div className="season-summary-label">ESTADO</div>
+          <div className={`season-summary-value ${statusClass}`}>{statusLabel}</div>
+        </div>
+
+        <div className="season-summary-card">
+          <div className="season-summary-label">DURACIÓN</div>
           <div className="season-summary-value">
-            {isFinished ? "FINALIZADA" : "ACTIVA"}
+            {selectedSeason?.dateRangeLabel ?? "—"}
           </div>
         </div>
 
@@ -46,6 +74,11 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
             {isFinished ? "GANANCIA DEL GANADOR" : "GANANCIA DEL LÍDER"}
           </div>
           <div className="season-summary-value">{summary.leaderProfit.toFixed(2)} €</div>
+        </div>
+
+        <div className="season-summary-card">
+          <div className="season-summary-label">JUGADORES</div>
+          <div className="season-summary-value">{summary.totalPlayers}</div>
         </div>
 
         <div className="season-summary-card">
