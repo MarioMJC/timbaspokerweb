@@ -12,6 +12,7 @@ import MainNav from "./components/MainNav";
 import HomePage from "./pages/HomePage";
 import PlayersPage from "./pages/PlayersPage";
 import SeasonsPage from "./pages/SeasonsPage";
+import PlayerProfilePage from "./pages/PlayerProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 import type { PlayerStats, SeasonId } from "./types/poker";
@@ -44,6 +45,15 @@ export default function App() {
             <Route
               path="/players"
               element={<PlayersPage statsBySeason={statsBySeason} />}
+            />
+            <Route
+              path="/players/:playerId"
+              element={
+                <PlayerProfilePage
+                  rowsBySeason={rowsBySeason}
+                  statsBySeason={statsBySeason}
+                />
+              }
             />
             <Route
               path="/seasons"

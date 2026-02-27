@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PLAYER_BY_ID } from "../config/poker";
 import { getRank } from "../utils/pokerStats";
 import type { PlayerId, PlayerStats } from "../types/poker";
@@ -23,17 +24,32 @@ export default function PlayersGrid({ stats, onSelectPlayer }: Props) {
         const rank = getRank(stats, playerStats.playerId);
 
         return (
-          <button
+          <div
             key={playerStats.playerId}
-            className={`player-card rank-${rank}`}
-            onClick={() => onSelectPlayer(playerStats.playerId)}
-            type="button"
-            aria-label={`Ver estadísticas de ${meta?.label ?? playerStats.playerLabel}`}
+            className={`player-card rank-${rank} player-card-shell`}
           >
             <div className="badge">{rankLabel(rank, stats.length)}</div>
+
             <img src={meta?.img ?? ""} alt={meta?.label ?? playerStats.playerLabel} />
             <p>{meta?.label ?? playerStats.playerLabel}</p>
-          </button>
+
+            <div className="player-card-actions">
+              <button
+                onClick={() => onSelectPlayer(playerStats.playerId)}
+                type="button"
+                className="player-card-btn primary"
+              >
+                Ver stats
+              </button>
+
+              <Link
+                to={`/players/${playerStats.playerId}`}
+                className="player-card-btn secondary"
+              >
+                Perfil
+              </Link>
+            </div>
+          </div>
         );
       })}
     </div>
