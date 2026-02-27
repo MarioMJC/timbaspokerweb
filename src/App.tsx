@@ -1,33 +1,23 @@
-import { useMemo, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useMemo } from "react";
 import "./App.css";
 
-import AnnualCharts from "./components/AnnualCharts";
-import PlayerModal from "./components/PlayerModal";
-
-import {
-  DEFAULT_SEASON_ID,
-  PLAYER_BY_ID,
-  SEASONS,
-  SOCIAL_LINKS,
-} from "./config/poker";
+import { SEASONS } from "./config/poker";
 import { usePokerData } from "./hooks/usePokerData";
-import { computeAllStats, getRank } from "./utils/pokerStats";
+import { computeAllStats } from "./utils/pokerStats";
 
-import type { PlayerId, PlayerStats, SeasonId } from "./types/poker";
+import SiteHeader from "./components/SiteHeader";
+import MainNav from "./components/MainNav";
 
-function rankLabel(rank: number, total: number) {
-  if (rank === 1) return "PRIMERO";
-  if (rank === 2) return "SEGUNDO";
-  if (rank === 3) return "TERCERO";
-  if (rank === total) return "ÚLTIMO";
-  return `#${rank}`;
-}
+import HomePage from "./pages/HomePage";
+import PlayersPage from "./pages/PlayersPage";
+import SeasonsPage from "./pages/SeasonsPage";
+import NotFoundPage from "./pages/NotFoundPage";
+
+import type { PlayerStats, SeasonId } from "./types/poker";
 
 export default function App() {
   const { rowsBySeason, summary, loading, error } = usePokerData();
-
-  const [selectedPlayerId, setSelectedPlayerId] = useState<PlayerId | null>(null);
-  const [chartSeasonId, setChartSeasonId] = useState<SeasonId>(DEFAULT_SEASON_ID);
 
   const statsBySeason = useMemo(() => {
     return SEASONS.reduce<Record<SeasonId, PlayerStats[]>>((acc, season) => {
@@ -36,108 +26,33 @@ export default function App() {
     }, {});
   }, [rowsBySeason]);
 
-  const currentSeasonStats = statsBySeason[chartSeasonId] ?? [];
-
-  const orderedPlayers = useMemo(() => {
-    return currentSeasonStats.map((stats) => {
-      const meta = PLAYER_BY_ID[stats.playerId];
-      const rank = getRank(currentSeasonStats, stats.playerId);
-
-      return {
-        playerId: stats.playerId,
-        label: meta?.label ?? stats.playerLabel,
-        img: meta?.img ?? "",
-        rank,
-        rankText: rankLabel(rank, currentSeasonStats.length),
-      };
-    });
-  }, [currentSeasonStats]);
-
-  const chartRows = rowsBySeason[chartSeasonId] ?? [];
-
   return (
-    <div className="main-container">
-      <div className="top-right-stats">
-        <div className="top-stat">
-          <div className="top-stat-label">BUY-IN TOTAL</div>
-          <div className="top-stat-value">
-            {summary.buyIn == null ? "—" : `${summary.buyIn.toFixed(2)} €`}
-          </div>
-        </div>
+    <BrowserRouter>
+      <div className="main-container">
+        <SiteHeader buyIn={summary.buyIn} pot={summary.pot} />
+        <MainNav />
 
-        <div className="top-stat">
-          <div className="top-stat-label">BOTE ACUMULADO</div>
-          <div className="top-stat-value">
-            {summary.pot == null ? "—" : `${summary.pot.toFixed(2)} €`}
-          </div>
-        </div>
+        {loading && <p className="muted">Cargando datos...</p>}
+        {error && <p className="muted">{error}</p>}
+
+        {!loading && !error && (
+          <Routes>
+            <Route
+              path="/"
+              element={<HomePage rowsBySeason={rowsBySeason} statsBySeason={statsBySeason} />}
+            />
+            <Route
+              path="/players"
+              element={<PlayersPage statsBySeason={statsBySeason} />}
+            />
+            <Route
+              path="/seasons"
+              element={<SeasonsPage rowsBySeason={rowsBySeason} statsBySeason={statsBySeason} />}
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        )}
       </div>
-
-      <h1 className="title">TIMBASPOKER</h1>
-
-      <div className="social-links">
-        {SOCIAL_LINKS.map((social) => (
-          <a
-            key={social.key}
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`social-btn ${social.variant}`}
-          >
-            <img src={social.logo} alt={social.label} />
-            <span>{social.label}</span>
-          </a>
-        ))}
-      </div>
-
-      {loading && <p className="muted">Cargando datos...</p>}
-      {error && <p className="muted">{error}</p>}
-
-      {!loading && !error && (
-        <>
-          <div className="players-row">
-            {orderedPlayers.map((player) => (
-              <button
-                key={player.playerId}
-                className={`player-card rank-${player.rank}`}
-                onClick={() => setSelectedPlayerId(player.playerId)}
-                type="button"
-                aria-label={`Ver estadísticas de ${player.label}`}
-              >
-                <div className="badge">{player.rankText}</div>
-                <img src={player.img} alt={player.label} />
-                <p>{player.label}</p>
-              </button>
-            ))}
-          </div>
-
-          <div className="charts-section">
-            <h2 className="charts-title">GRÁFICAS</h2>
-
-            <div className="charts-buttons">
-              {SEASONS.map((season) => (
-                <button
-                  key={season.id}
-                  className={`season-tab ${chartSeasonId === season.id ? "active" : ""}`}
-                  onClick={() => setChartSeasonId(season.id)}
-                  type="button"
-                >
-                  {season.label}
-                </button>
-              ))}
-            </div>
-
-            <AnnualCharts csvRows={chartRows} />
-          </div>
-        </>
-      )}
-
-      <PlayerModal
-        open={selectedPlayerId !== null}
-        onClose={() => setSelectedPlayerId(null)}
-        playerId={selectedPlayerId}
-        statsBySeason={statsBySeason}
-      />
-    </div>
+    </BrowserRouter>
   );
 }
