@@ -1,0 +1,54 @@
+import { useEffect, useState } from "react";
+import { loadPokerData } from "../data/pokerData";
+import type { SeasonRows, SummaryStats } from "../types/poker";
+
+function createEmptySeasonRows(): SeasonRows {
+  return {
+    ANUAL: [],
+    WINTER: [],
+    SPRING: [],
+  };
+}
+
+export function usePokerData() {
+  const [rowsBySeason, setRowsBySeason] = useState<SeasonRows>(createEmptySeasonRows());
+  const [summary, setSummary] = useState<SummaryStats>({ buyIn: null, pot: null });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await loadPokerData();
+
+        if (cancelled) return;
+
+        setRowsBySeason(data.rowsBySeason);
+        setSummary(data.summary);
+      } catch (err) {
+        console.error("Error cargando datos de poker:", err);
+
+        if (cancelled) return;
+        setError("No se pudieron cargar los datos.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return {
+    rowsBySeason,
+    summary,
+    loading,
+    error,
+  };
+}
