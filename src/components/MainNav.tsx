@@ -24,6 +24,13 @@ export default function MainNav() {
       >
         TEMPORADAS
       </NavLink>
+
+      <NavLink
+        to="/matchdays"
+        className={({ isActive }) => `main-nav-link ${isActive ? "active" : ""}`}
+      >
+        JORNADAS
+      </NavLink>
     </nav>
   );
 }

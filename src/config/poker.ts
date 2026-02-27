@@ -42,7 +42,7 @@ export const PLAYERS: PlayerConfig[] = [
     csvName: "Gonzalo",
     img: gonzaloImg,
     color: "#facc15",
-  }
+  },
 ];
 
 export const PLAYER_IDS = PLAYERS.map((player) => player.id);
@@ -56,16 +56,22 @@ export const SEASONS: SeasonConfig[] = [
     id: "anual",
     label: "ANUAL",
     dataPath: "/data/anual.csv",
+    status: "active",
+    dateRangeLabel: "27 agosto (2025) - actualidad",
   },
   {
     id: "winter",
     label: "WINTER SEASON",
     dataPath: "/data/winter.csv",
+    status: "finished",
+    dateRangeLabel: "27 agosto (2025) - 21 diciembre (2025)",
   },
   {
     id: "spring",
     label: "SPRING SEASON",
     dataPath: "/data/spring.csv",
+    status: "active",
+    dateRangeLabel: "8 enero (2026) - actualidad",
   },
 ];
 

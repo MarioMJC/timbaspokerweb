@@ -16,6 +16,9 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
     return buildSeasonSummary(statsBySeason[seasonId] ?? []);
   }, [seasonId, statsBySeason]);
 
+  const selectedSeason = SEASONS.find((season) => season.id === seasonId);
+  const isFinished = selectedSeason?.status === "finished";
+
   return (
     <section className="page-section">
       <h2 className="page-title">TEMPORADAS</h2>
@@ -25,19 +28,23 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
 
       <div className="season-summary-grid">
         <div className="season-summary-card">
-          <div className="season-summary-label">TEMPORADA ACTIVA</div>
+          <div className="season-summary-label">ESTADO</div>
           <div className="season-summary-value">
-            {SEASONS.find((season) => season.id === seasonId)?.label ?? "—"}
+            {isFinished ? "FINALIZADA" : "ACTIVA"}
           </div>
         </div>
 
         <div className="season-summary-card">
-          <div className="season-summary-label">LÍDER</div>
+          <div className="season-summary-label">
+            {isFinished ? "GANADOR" : "LÍDER"}
+          </div>
           <div className="season-summary-value">{summary.leaderLabel}</div>
         </div>
 
         <div className="season-summary-card">
-          <div className="season-summary-label">GANANCIA DEL LÍDER</div>
+          <div className="season-summary-label">
+            {isFinished ? "GANANCIA DEL GANADOR" : "GANANCIA DEL LÍDER"}
+          </div>
           <div className="season-summary-value">{summary.leaderProfit.toFixed(2)} €</div>
         </div>
 
@@ -51,7 +58,7 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
         selectedSeasonId={seasonId}
         onChangeSeason={setSeasonId}
         rowsBySeason={rowsBySeason}
-        title="ANÁLISIS DE TEMPORADA"
+        title={`ANÁLISIS DE ${selectedSeason?.label ?? "TEMPORADA"}`}
       />
     </section>
   );

@@ -18,10 +18,14 @@ export type PlayerConfig = {
   color: string;
 };
 
+export type SeasonStatus = "active" | "finished" | "upcoming";
+
 export type SeasonConfig = {
   id: SeasonId;
   label: string;
   dataPath: string;
+  status: SeasonStatus;
+  dateRangeLabel: string;
 };
 
 export type SocialLinkConfig = {

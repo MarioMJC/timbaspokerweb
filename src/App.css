@@ -750,6 +750,167 @@ body {
   font-weight: 800;
 }
 
+.matchdays-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.matchday-card {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 26, 26, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.matchday-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.matchday-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 26, 26, 0.12);
+  color: #ff6666;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.matchday-jornada {
+  font-weight: 800;
+}
+
+.matchday-title {
+  font-size: 1.15rem;
+}
+
+.matchday-card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.matchday-label {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.matchday-link {
+  margin-top: auto;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 800;
+  color: white;
+  border: 1px solid rgba(255, 26, 26, 0.55);
+  background: rgba(255, 26, 26, 0.14);
+}
+
+.matchday-narrative {
+  margin: 28px 0;
+}
+
+.narrative-list {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.inline-table-link {
+  color: #ff6666;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.season-page-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 8px 0 22px;
+}
+
+.season-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+}
+
+.season-status-badge.active {
+  background: rgba(34, 197, 94, 0.12);
+  color: #7dffab;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.season-status-badge.finished {
+  background: rgba(255, 26, 26, 0.12);
+  color: #ff7d7d;
+  border-color: rgba(255, 26, 26, 0.35);
+}
+
+.season-status-badge.upcoming {
+  background: rgba(250, 204, 21, 0.12);
+  color: #ffe26a;
+  border-color: rgba(250, 204, 21, 0.35);
+}
+
+.season-duration-text {
+  font-size: 0.95rem;
+  opacity: 0.84;
+}
+
+.season-summary-value-small {
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.compact-season-summary-grid {
+  margin-top: 6px;
+  margin-bottom: 26px;
+}
+
+.matchday-duration {
+  font-size: 0.88rem;
+  opacity: 0.76;
+  margin-top: -4px;
+}
+
+.season-summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .matchdays-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .matchdays-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 980px) {
   .player-profile-hero {
     grid-template-columns: 1fr;
