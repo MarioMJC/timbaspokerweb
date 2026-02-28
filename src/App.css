@@ -989,6 +989,97 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+.site-title-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.about-header-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  text-decoration: none;
+  color: white;
+  border: 1px solid rgba(255, 26, 26, 0.6);
+  background: rgba(20, 0, 0, 0.92);
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  transition: 0.2s ease;
+  box-shadow: 0 0 14px rgba(255, 26, 26, 0.16);
+  z-index: 1000;
+}
+
+.about-header-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(255, 26, 26, 0.28);
+}
+
+.site-title-row-spacer {
+  display: none;
+}
+
+.about-page {
+  max-width: 1050px;
+  margin: 0 auto;
+}
+
+.about-hero {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.about-kicker {
+  color: #ff4d4d;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  margin-bottom: 10px;
+  text-shadow:
+    0 0 6px rgba(255, 77, 77, 0.85),
+    0 0 18px rgba(255, 77, 77, 0.55);
+}
+
+.about-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 26, 26, 0.2);
+  border-radius: 22px;
+  padding: 28px;
+  line-height: 1.8;
+  font-size: 1.05rem;
+  box-shadow: 0 0 26px rgba(255, 26, 26, 0.08);
+}
+
+.about-card p {
+  margin-bottom: 18px;
+}
+
+.about-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+  .site-title-row {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .about-header-btn {
+    top: 12px;
+    left: 12px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .site-title-row-spacer {
+    display: none;
+  }
+}
+
 @media (max-width: 1100px) {
   .matchdays-grid {
     grid-template-columns: repeat(2, minmax(220px, 1fr));

@@ -25,12 +25,21 @@ export default function SiteHeader({ buyIn, pot }: Props) {
         </div>
       </div>
 
-      <Link to="/" className="title-link">
-        <h1 className="title">TIMBASPOKER</h1>
-      </Link>
+      <div className="site-title-row">
+        <Link to="/about" className="about-header-btn">
+          ¿QUIÉNES SOMOS?
+        </Link>
+
+        <Link to="/" className="title-link">
+          <h1 className="title">TIMBASPOKER</h1>
+        </Link>
+
+        <div className="site-title-row-spacer" />
+      </div>
 
       <p className="title-submessage">
-        TODOS LOS FIN DE SEMANAS DIRECTO EN <span className="title-submessage-kick">KICK</span>
+        TODOS LOS FIN DE SEMANAS DIRECTO EN{" "}
+        <span className="title-submessage-kick">KICK</span>
       </p>
 
       <div className="social-links">
