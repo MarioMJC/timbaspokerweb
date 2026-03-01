@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SOCIAL_LINKS } from "../config/poker";
 
@@ -7,6 +8,8 @@ type Props = {
 };
 
 export default function SiteHeader({ buyIn, pot }: Props) {
+  const [showSupportModal, setShowSupportModal] = useState(false);
+
   return (
     <>
       <div className="top-right-stats">
@@ -26,15 +29,35 @@ export default function SiteHeader({ buyIn, pot }: Props) {
       </div>
 
       <div className="site-title-row">
-        <Link to="/about" className="about-header-btn">
-          ¿QUIÉNES SOMOS?
-        </Link>
+        <div className="top-left-actions">
+          <Link to="/about" className="about-header-btn">
+            ¿QUIÉNES SOMOS?
+          </Link>
+
+          <button
+            type="button"
+            className="support-header-btn"
+            onClick={() => setShowSupportModal(true)}
+          >
+            ¿QUIERES APOYAR?
+          </button>
+        </div>
 
         <Link to="/" className="title-link">
           <h1 className="title">TIMBASPOKER</h1>
         </Link>
 
         <div className="site-title-row-spacer" />
+      </div>
+
+      <div className="last-stream-banner">
+        <span>ÚLTIMO DIRECTO</span>
+        <span>/</span>
+        <span>28-02-2026</span>
+        <span>/</span>
+        <span>JORNADA 7 SPRING SEASON</span>
+        <span>/</span>
+        <span>JORNADA 28 ANUAL</span>
       </div>
 
       <p className="title-submessage">
@@ -56,6 +79,55 @@ export default function SiteHeader({ buyIn, pot }: Props) {
           </a>
         ))}
       </div>
+
+      {showSupportModal && (
+        <div
+          className="support-modal-overlay"
+          onClick={() => setShowSupportModal(false)}
+        >
+          <div
+            className="support-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="support-modal-close"
+              onClick={() => setShowSupportModal(false)}
+              aria-label="Cerrar modal"
+            >
+              ×
+            </button>
+
+            <h2>¿QUIERES APOYAR?</h2>
+
+            <p>
+              Somos un grupo de 4 chavales con pasión por el póker que estamos
+              construyendo TIMBASPOKER desde cero, con mucha ilusión y ganas de
+              hacer crecer este proyecto.
+            </p>
+
+            <p>
+              Estamos en nuestros inicios y cualquier ayuda nos viene genial
+              para seguir mejorando los directos, la web, los overlays, el
+              contenido y la calidad de cada jornada.
+            </p>
+
+            <p>
+              Si te gusta lo que hacemos y quieres aportar tu granito de arena,
+              te lo agradeceremos muchísimo. ❤️
+            </p>
+
+            <a
+              href="https://paypal.me/TIMBASPOKER"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="support-modal-paypal-btn"
+            >
+              APOYAR
+            </a>
+          </div>
+        </div>
+      )}
     </>
   );
 }
