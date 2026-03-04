@@ -1,9 +1,15 @@
 import { Link, useParams } from "react-router-dom";
-import { SEASON_BY_ID } from "../config/poker";
+import { useMemo } from "react";
+import {
+  SEASON_BY_ID,
+  MATCHDAY_MEDIA,
+  getAnnualMatchdayFromSeason,
+} from "../config/poker";
 import MatchdayResultsTable from "../components/MatchdayResultsTable";
 import { buildMatchdayDetail, buildMatchdayNarrative } from "../utils/matchdays";
 import { getSeasonStatusClass, getSeasonStatusLabel } from "../utils/seasonMeta";
 import type { SeasonRows } from "../types/poker";
+import { parseJornada } from "../lib/csv";
 
 type Props = {
   rowsBySeason: SeasonRows;
@@ -12,15 +18,49 @@ type Props = {
 export default function MatchdayDetailPage({ rowsBySeason }: Props) {
   const params = useParams<{ seasonId: string; jornada: string }>();
 
-  const seasonId = params.seasonId ?? "";
-  const jornada = Number(params.jornada);
+  const rawSeasonId = params.seasonId;
+  const rawJornada = params.jornada;
 
-  const detail =
-    Number.isFinite(jornada) && seasonId
-      ? buildMatchdayDetail(rowsBySeason[seasonId] ?? [], seasonId, jornada)
+  const jornada = rawJornada ? Number(rawJornada) : NaN;
+
+  const seasonRows = rawSeasonId ? rowsBySeason[rawSeasonId] ?? [] : [];
+
+  // Jornadas disponibles dentro de esa season (según el CSV)
+  const availableJornadas = useMemo(() => {
+    const set = new Set<number>();
+
+    for (const row of seasonRows) {
+      const j = parseJornada(row["Partidas"]);
+      if (j != null) set.add(j);
+    }
+
+    return Array.from(set).sort((a, b) => a - b);
+  }, [seasonRows]);
+
+  const currentIndex = Number.isFinite(jornada)
+    ? availableJornadas.indexOf(jornada)
+    : -1;
+
+  const prevJornada = currentIndex > 0 ? availableJornadas[currentIndex - 1] : null;
+  const nextJornada =
+    currentIndex >= 0 && currentIndex < availableJornadas.length - 1
+      ? availableJornadas[currentIndex + 1]
       : null;
 
-  const season = seasonId ? SEASON_BY_ID[seasonId] : null;
+  const detail =
+    rawSeasonId && Number.isFinite(jornada)
+      ? buildMatchdayDetail(seasonRows, rawSeasonId, jornada)
+      : null;
+
+  const season = rawSeasonId ? SEASON_BY_ID[rawSeasonId] : null;
+
+  const annualMatchday =
+    rawSeasonId && Number.isFinite(jornada)
+      ? getAnnualMatchdayFromSeason(rawSeasonId, jornada)
+      : null;
+
+  const media =
+    annualMatchday != null ? MATCHDAY_MEDIA[annualMatchday] : undefined;
 
   if (!detail) {
     return (
@@ -46,9 +86,50 @@ export default function MatchdayDetailPage({ rowsBySeason }: Props) {
         </Link>
       </div>
 
-      <h2 className="page-title">
-        {detail.seasonLabel} · Jornada {detail.jornada}
-      </h2>
+      {/* TÍTULO CON FLECHAS */}
+      <div className="matchday-title-row">
+        {prevJornada != null && rawSeasonId ? (
+          <Link
+            to={`/matchdays/${rawSeasonId}/${prevJornada}`}
+            className="matchday-nav-arrow"
+            aria-label="Jornada anterior"
+            title="Jornada anterior"
+          >
+            ←
+          </Link>
+        ) : (
+          <span
+            className="matchday-nav-arrow disabled"
+            aria-hidden="true"
+            title="No hay jornada anterior"
+          >
+            ←
+          </span>
+        )}
+
+        <h2 className="page-title matchday-title">
+          {detail.seasonLabel} · Jornada {detail.jornada}
+        </h2>
+
+        {nextJornada != null && rawSeasonId ? (
+          <Link
+            to={`/matchdays/${rawSeasonId}/${nextJornada}`}
+            className="matchday-nav-arrow"
+            aria-label="Jornada siguiente"
+            title="Jornada siguiente"
+          >
+            →
+          </Link>
+        ) : (
+          <span
+            className="matchday-nav-arrow disabled"
+            aria-hidden="true"
+            title="No hay jornada siguiente"
+          >
+            →
+          </span>
+        )}
+      </div>
 
       {season && (
         <div className="season-page-meta">
@@ -92,6 +173,24 @@ export default function MatchdayDetailPage({ rowsBySeason }: Props) {
           <div className="season-summary-value">{detail.totalPotChange.toFixed(2)} €</div>
         </div>
       </div>
+
+      {media && (
+        <section className="matchday-media-section">
+          <h3 className="subsection-title">Momento Clave de la Jornada</h3>
+
+          <div className="matchday-media-grid">
+            <div className="matchday-media-card">
+              <h4>Ganador de la jornada</h4>
+              <img src={media.winnerImage} alt="Ganador jornada" loading="lazy" />
+            </div>
+
+            <div className="matchday-media-card">
+              <h4>Mano final</h4>
+              <img src={media.finalHandImage} alt="Mano final" loading="lazy" />
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="matchday-narrative">
         <h3 className="subsection-title">Resumen de la jornada</h3>

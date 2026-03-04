@@ -101,7 +101,7 @@ export const SOCIAL_LINKS: SocialLinkConfig[] = [
   {
     key: "tiktok",
     label: "TikTok",
-    href: "https://www.tiktok.com/@timbaspoker",
+    href: "https://www.tiktok.com/@spanishpoker77",
     logo: tiktokLogo,
     variant: "tiktok",
   },
@@ -112,4 +112,135 @@ export const SOCIAL_LINKS: SocialLinkConfig[] = [
     logo: youtubeLogo,
     variant: "youtube",
   },
+
 ];
+
+
+export const MATCHDAY_MEDIA: Record<number, {
+  winnerImage: string;
+  finalHandImage: string;
+}> = {
+
+  9: {
+    winnerImage: "/matchdays/annual/jornada-9/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-9/final-hand.jpg",
+  },
+
+  10: {
+    winnerImage: "/matchdays/annual/jornada-10/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-10/final-hand.jpg",
+  },
+
+  11: {
+    winnerImage: "/matchdays/annual/jornada-11/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-11/final-hand.jpg",
+  },
+
+  12: {
+    winnerImage: "/matchdays/annual/jornada-12/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-12/final-hand.jpg",
+  },
+
+  13: {
+    winnerImage: "/matchdays/annual/jornada-13/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-13/final-hand.jpg",
+  },
+
+  14: {
+    winnerImage: "/matchdays/annual/jornada-14/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-14/final-hand.jpg",
+  },
+
+  15: {
+    winnerImage: "/matchdays/annual/jornada-15/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-15/final-hand.jpg",
+  },
+
+  16: {
+    winnerImage: "/matchdays/annual/jornada-16/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-16/final-hand.jpg",
+  },
+
+  17: {
+    winnerImage: "/matchdays/annual/jornada-17/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-17/final-hand.jpg",
+  },
+
+  18: {
+    winnerImage: "/matchdays/annual/jornada-18/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-18/final-hand.jpg",
+  },
+
+  19: {
+    winnerImage: "/matchdays/annual/jornada-19/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-19/final-hand.jpg",
+  },
+
+  20: {
+    winnerImage: "/matchdays/annual/jornada-20/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-20/final-hand.jpg",
+  },
+
+  21: {
+    winnerImage: "/matchdays/annual/jornada-21/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-21/final-hand.jpg",
+  },
+
+  22: {
+    winnerImage: "/matchdays/annual/jornada-22/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-22/final-hand.jpg",
+  },
+
+  23: {
+    winnerImage: "/matchdays/annual/jornada-23/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-23/final-hand.jpg",
+  },
+
+  24: {
+    winnerImage: "/matchdays/annual/jornada-24/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-24/final-hand.jpg",
+  },
+
+  25: {
+    winnerImage: "/matchdays/annual/jornada-25/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-25/final-hand.jpg",
+  },
+
+  26: {
+    winnerImage: "/matchdays/annual/jornada-26/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-26/final-hand.jpg",
+  },
+
+  27: {
+    winnerImage: "/matchdays/annual/jornada-27/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-27/final-hand.jpg",
+  },
+
+  28: {
+    winnerImage: "/matchdays/annual/jornada-28/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-28/final-hand.jpg",
+  },
+};
+
+export function getAnnualMatchdayFromSeason(
+  seasonId: string,
+  jornada: number
+): number | null {
+  if (!Number.isFinite(jornada) || jornada < 1) {
+    return null;
+  }
+
+  if (seasonId === "anual") {
+    return jornada;
+  }
+
+  if (seasonId === "winter") {
+    return jornada >= 1 && jornada <= 21 ? jornada : null;
+  }
+
+  if (seasonId === "spring") {
+    return 21 + jornada;
+  }
+
+  return null;
+}

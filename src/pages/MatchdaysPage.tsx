@@ -21,6 +21,7 @@ export default function MatchdaysPage({ rowsBySeason }: Props) {
   return (
     <section className="page-section">
       <h2 className="page-title">JORNADAS</h2>
+
       <p className="page-subtitle">
         Histórico de jornadas con ganador del día, líder tras cada sesión y acceso al detalle.
       </p>
@@ -29,9 +30,9 @@ export default function MatchdaysPage({ rowsBySeason }: Props) {
         {SEASONS.map((season) => (
           <button
             key={season.id}
+            type="button"
             className={`season-tab ${seasonId === season.id ? "active" : ""}`}
             onClick={() => setSeasonId(season.id)}
-            type="button"
           >
             {season.label}
           </button>
@@ -41,10 +42,17 @@ export default function MatchdaysPage({ rowsBySeason }: Props) {
       {selectedSeason && (
         <>
           <div className="season-page-meta">
-            <span className={`season-status-badge ${getSeasonStatusClass(selectedSeason.status)}`}>
+            <span
+              className={`season-status-badge ${getSeasonStatusClass(
+                selectedSeason.status
+              )}`}
+            >
               {getSeasonStatusLabel(selectedSeason.status)}
             </span>
-            <span className="season-duration-text">{selectedSeason.dateRangeLabel}</span>
+
+            <span className="season-duration-text">
+              {selectedSeason.dateRangeLabel}
+            </span>
           </div>
 
           <div className="season-summary-grid compact-season-summary-grid">
@@ -77,7 +85,10 @@ export default function MatchdaysPage({ rowsBySeason }: Props) {
 
       <div className="matchdays-grid">
         {matchdays.map((item) => (
-          <MatchdayCard key={`${item.seasonId}-${item.jornada}`} item={item} />
+          <MatchdayCard
+            key={`${item.seasonId}-${item.jornada}`}
+            item={item}
+          />
         ))}
       </div>
     </section>

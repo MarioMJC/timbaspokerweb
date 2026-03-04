@@ -17,6 +17,7 @@ import MatchdaysPage from "./pages/MatchdaysPage";
 import MatchdayDetailPage from "./pages/MatchdayDetailPage";
 import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import BackgroundMusic from "./components/BackgroundMusic";
 
 import type { PlayerStats, SeasonId } from "./types/poker";
 
@@ -32,6 +33,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <BackgroundMusic />
+
       <div className="main-container">
         <SiteHeader buyIn={summary.buyIn} pot={summary.pot} />
         <MainNav />

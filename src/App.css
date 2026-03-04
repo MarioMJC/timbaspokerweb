@@ -838,6 +838,55 @@ body {
 
 .matchday-title {
   font-size: 1.15rem;
+  margin: 0; /* para que el h2 no meta márgenes raros en la fila */
+  text-align: center;
+}
+
+.matchday-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 👈 antes estaba center */
+  gap: 14px;
+  margin: 10px 0 6px;
+  width: 100%;               /* asegura que ocupe la fila */
+}
+
+.matchday-nav-arrow {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 26, 26, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  color: #ff6666;
+  text-decoration: none;
+  font-weight: 900;
+  line-height: 1;
+  transition: transform 0.15s ease, background 0.15s ease, border 0.15s ease;
+}
+
+.matchday-nav-arrow:hover {
+  transform: translateY(-1px) scale(1.05);
+  background: rgba(255, 26, 26, 0.08);
+  border-color: rgba(255, 26, 26, 0.6);
+}
+
+.matchday-nav-arrow.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .matchday-nav-arrow {
+    width: 38px;
+    height: 38px;
+  }
+
+  .matchday-title-row {
+    gap: 10px;
+  }
 }
 
 .matchday-card-grid {
@@ -1229,6 +1278,196 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 24px;
+}
+
+/* ============================= */
+/* MATCHDAY MEDIA SECTION */
+/* ============================= */
+
+.matchday-media-section {
+  margin-top: 60px;
+}
+
+.matchday-media-section .subsection-title {
+  margin-bottom: 25px;
+}
+
+/* GRID RESPONSIVE */
+.matchday-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, max-content));
+  justify-content: center;
+  gap: 30px;
+}
+
+.matchday-media-card {
+  background: linear-gradient(145deg, #111, #0c0c0c);
+  border: 1px solid #1f1f1f;
+  border-radius: 18px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.matchday-media-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.matchday-media-card h4 {
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  color: #aaa;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.matchday-media-card img {
+  display: block;
+  width: auto;
+  max-width: min(100%, 520px);
+  height: 420px;
+  border-radius: 14px;
+  object-fit: contain;
+  object-position: center;
+  background: #0a0a0a;
+  margin: 0 auto;
+  transition: transform 0.3s ease;
+}
+
+.matchday-media-card img:hover {
+  transform: scale(1.02);
+}
+
+.music-player-widget {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 40, 40, 0.25);
+
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 20, 0.92),
+    rgba(8, 8, 8, 0.96)
+  );
+
+  box-shadow:
+    0 0 24px rgba(255, 0, 0, 0.14),
+    inset 0 0 18px rgba(255, 40, 40, 0.05);
+
+  backdrop-filter: blur(8px);
+}
+
+.music-toggle-btn {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 40, 40, 0.45);
+  background: linear-gradient(
+    180deg,
+    rgba(70, 0, 0, 0.82),
+    rgba(20, 0, 0, 0.92)
+  );
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.music-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 24px rgba(255, 0, 0, 0.28),
+    inset 0 0 14px rgba(255, 40, 40, 0.12);
+}
+
+.music-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.music-volume-label {
+  color: #d5d5d5;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-width: 58px;
+}
+
+.music-volume-slider {
+  width: 140px;
+  cursor: pointer;
+}
+
+.music-volume-value {
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-width: 42px;
+  text-align: right;
+}
+
+
+
+@media (max-width: 768px) {
+  .music-player-widget {
+    right: 12px;
+    bottom: 12px;
+    padding: 10px;
+    width: calc(100vw - 24px);
+    max-width: 280px;
+  }
+
+  .music-toggle-btn {
+    font-size: 0.82rem;
+    padding: 9px 12px;
+  }
+
+  .music-volume-control {
+    gap: 8px;
+  }
+
+  .music-volume-slider {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .music-toggle-btn {
+    right: 12px;
+    bottom: 12px;
+    font-size: 0.82rem;
+    padding: 9px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .matchday-media-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .matchday-media-card {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .matchday-media-card img {
+    max-width: 100%;
+    height: 280px;
+  }
 }
 
 @media (max-width: 900px) {
