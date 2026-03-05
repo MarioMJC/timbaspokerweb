@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import { PLAYER_BY_ID } from "../config/poker";
 import { getRank } from "../utils/pokerStats";
-import type { PlayerId, PlayerStats } from "../types/poker";
+import type { PlayerStats } from "../types/poker";
 
 type Props = {
   stats: PlayerStats[];
-  onSelectPlayer: (playerId: PlayerId) => void;
 };
 
 function rankLabel(rank: number, total: number) {
@@ -16,7 +15,7 @@ function rankLabel(rank: number, total: number) {
   return `#${rank}`;
 }
 
-export default function PlayersGrid({ stats, onSelectPlayer }: Props) {
+export default function PlayersGrid({ stats }: Props) {
   return (
     <div className="players-row">
       {stats.map((playerStats) => {
@@ -33,15 +32,7 @@ export default function PlayersGrid({ stats, onSelectPlayer }: Props) {
             <img src={meta?.img ?? ""} alt={meta?.label ?? playerStats.playerLabel} />
             <p>{meta?.label ?? playerStats.playerLabel}</p>
 
-            <div className="player-card-actions">
-              <button
-                onClick={() => onSelectPlayer(playerStats.playerId)}
-                type="button"
-                className="player-card-btn primary"
-              >
-                Ver stats
-              </button>
-
+            <div className="player-card-actions player-card-actions-single">
               <Link
                 to={`/players/${playerStats.playerId}`}
                 className="player-card-btn secondary"

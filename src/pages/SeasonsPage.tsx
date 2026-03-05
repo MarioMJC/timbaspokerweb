@@ -91,7 +91,7 @@ export default function SeasonsPage({ rowsBySeason, statsBySeason }: Props) {
         selectedSeasonId={seasonId}
         onChangeSeason={setSeasonId}
         rowsBySeason={rowsBySeason}
-        title={`ANÁLISIS DE ${selectedSeason?.label ?? "TEMPORADA"}`}
+        showHeader={false}
       />
     </section>
   );

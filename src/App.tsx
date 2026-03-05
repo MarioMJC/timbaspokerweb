@@ -15,6 +15,7 @@ import SeasonsPage from "./pages/SeasonsPage";
 import PlayerProfilePage from "./pages/PlayerProfilePage";
 import MatchdaysPage from "./pages/MatchdaysPage";
 import MatchdayDetailPage from "./pages/MatchdayDetailPage";
+import ComparePlayersPage from "./pages/ComparePlayersPage";
 import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import BackgroundMusic from "./components/BackgroundMusic";
@@ -48,10 +49,7 @@ export default function App() {
               path="/"
               element={<HomePage rowsBySeason={rowsBySeason} statsBySeason={statsBySeason} />}
             />
-            <Route
-              path="/about"
-              element={<AboutPage />}
-            />
+            <Route path="/about" element={<AboutPage />} />
             <Route
               path="/players"
               element={<PlayersPage statsBySeason={statsBySeason} />}
@@ -60,6 +58,15 @@ export default function App() {
               path="/players/:playerId"
               element={
                 <PlayerProfilePage
+                  rowsBySeason={rowsBySeason}
+                  statsBySeason={statsBySeason}
+                />
+              }
+            />
+            <Route
+              path="/compare"
+              element={
+                <ComparePlayersPage
                   rowsBySeason={rowsBySeason}
                   statsBySeason={statsBySeason}
                 />

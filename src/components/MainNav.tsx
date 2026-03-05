@@ -19,6 +19,13 @@ export default function MainNav() {
       </NavLink>
 
       <NavLink
+        to="/compare"
+        className={({ isActive }) => `main-nav-link ${isActive ? "active" : ""}`}
+      >
+        COMPARAR
+      </NavLink>
+
+      <NavLink
         to="/seasons"
         className={({ isActive }) => `main-nav-link ${isActive ? "active" : ""}`}
       >

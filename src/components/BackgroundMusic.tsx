@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { BACKGROUND_PLAYLIST } from "../config/audio";
 
 const DEFAULT_VOLUME = 0.7;
+const MOBILE_STEP = 0.1;
+
 const STORAGE_KEYS = {
-  isPlaying: "timbaspoker_music_is_playing",
   volume: "timbaspoker_music_volume",
+  previousVolume: "timbaspoker_music_previous_volume",
   trackIndex: "timbaspoker_music_track_index",
 };
+
+function clampVolume(value: number) {
+  return Math.min(1, Math.max(0, Number(value.toFixed(2))));
+}
 
 export default function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -17,25 +23,30 @@ export default function BackgroundMusic() {
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
   });
 
-  const [isPlaying, setIsPlaying] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.isPlaying);
-    return saved === null ? true : saved === "true";
-  });
-
   const [volume, setVolume] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.volume);
     const parsed = saved ? Number(saved) : DEFAULT_VOLUME;
-    return Number.isFinite(parsed) ? parsed : DEFAULT_VOLUME;
+    return Number.isFinite(parsed) ? clampVolume(parsed) : DEFAULT_VOLUME;
   });
+
+  const [previousVolume, setPreviousVolume] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.previousVolume);
+    const parsed = saved ? Number(saved) : DEFAULT_VOLUME;
+    return Number.isFinite(parsed) ? clampVolume(parsed) : DEFAULT_VOLUME;
+  });
+
+  const [isMobileVolumeUI, setIsMobileVolumeUI] = useState(false);
 
   const currentTrack =
     BACKGROUND_PLAYLIST[
-      currentTrackIndex % Math.max(BACKGROUND_PLAYLIST.length, 1)
+    currentTrackIndex % Math.max(BACKGROUND_PLAYLIST.length, 1)
     ];
+
+  const isMuted = volume === 0;
 
   const tryPlay = async () => {
     const audio = audioRef.current;
-    if (!audio || !isPlaying) return false;
+    if (!audio) return false;
 
     try {
       await audio.play();
@@ -50,18 +61,38 @@ export default function BackgroundMusic() {
   };
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.isPlaying, String(isPlaying));
-  }, [isPlaying]);
+    const updateMobileVolumeUI = () => {
+      const isCoarsePointer =
+        typeof window !== "undefined" &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(pointer: coarse)").matches;
+
+      const isSmallScreen =
+        typeof window !== "undefined" ? window.innerWidth <= 768 : false;
+
+      setIsMobileVolumeUI(isCoarsePointer || isSmallScreen);
+    };
+
+    updateMobileVolumeUI();
+    window.addEventListener("resize", updateMobileVolumeUI);
+
+    return () => {
+      window.removeEventListener("resize", updateMobileVolumeUI);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.volume, String(volume));
   }, [volume]);
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.previousVolume, String(previousVolume));
+  }, [previousVolume]);
+
+  useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.trackIndex, String(currentTrackIndex));
   }, [currentTrackIndex]);
 
-  // ✅ Solo ajusta volumen, no recarga canción
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -69,7 +100,6 @@ export default function BackgroundMusic() {
     audio.volume = volume;
   }, [volume]);
 
-  // ✅ Solo cambia pista cuando toca, no cuando mueves el slider
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentTrack) return;
@@ -78,10 +108,8 @@ export default function BackgroundMusic() {
     audio.preload = "auto";
     audio.load();
 
-    if (isPlaying) {
-      void tryPlay();
-    }
-  }, [currentTrack, isPlaying]);
+    void tryPlay();
+  }, [currentTrack]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -98,8 +126,6 @@ export default function BackgroundMusic() {
   }, []);
 
   useEffect(() => {
-    if (!isPlaying) return;
-
     const attemptResume = async () => {
       await tryPlay();
     };
@@ -123,11 +149,9 @@ export default function BackgroundMusic() {
       window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [isPlaying, currentTrackIndex]);
+  }, [currentTrackIndex]);
 
   useEffect(() => {
-    if (!isPlaying) return;
-
     const unlockAudio = async () => {
       const ok = await tryPlay();
       if (ok) {
@@ -146,27 +170,34 @@ export default function BackgroundMusic() {
       window.removeEventListener("keydown", unlockAudio);
       window.removeEventListener("touchstart", unlockAudio);
     };
-  }, [isPlaying, currentTrackIndex]);
-
-  const handleTogglePlayback = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    } else {
-      setIsPlaying(true);
-      const ok = await tryPlay();
-      if (!ok) {
-        // Se reanudará en la siguiente interacción permitida por el navegador
-      }
-    }
-  };
+  }, [currentTrackIndex]);
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = Number(event.target.value);
+    const newVolume = clampVolume(Number(event.target.value));
+    if (newVolume > 0) {
+      setPreviousVolume(newVolume);
+    }
     setVolume(newVolume);
+  };
+
+  const changeVolumeBy = (delta: number) => {
+    setVolume((prev) => {
+      const next = clampVolume(prev + delta);
+      if (next > 0) {
+        setPreviousVolume(next);
+      }
+      return next;
+    });
+  };
+
+  const toggleMute = () => {
+    if (isMuted) {
+      const restored = previousVolume > 0 ? previousVolume : DEFAULT_VOLUME;
+      setVolume(restored);
+    } else {
+      setPreviousVolume(volume);
+      setVolume(0);
+    }
   };
 
   if (BACKGROUND_PLAYLIST.length === 0) {
@@ -178,33 +209,71 @@ export default function BackgroundMusic() {
       <audio ref={audioRef} />
 
       <div className="music-player-widget">
-        <button
-          type="button"
-          className="music-toggle-btn"
-          onClick={handleTogglePlayback}
-          aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
-          title={isPlaying ? "Pausar música" : "Reproducir música"}
-        >
-          {isPlaying ? "🔊 Música ON" : "🔇 Música OFF"}
-        </button>
-
         <div className="music-volume-control">
           <span className="music-volume-label">Volumen</span>
 
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={handleVolumeChange}
-            className="music-volume-slider"
-            aria-label="Control de volumen"
-          />
+          {isMobileVolumeUI ? (
+            <div className="music-volume-mobile">
+              <button
+                type="button"
+                className="music-volume-step-btn"
+                onClick={() => changeVolumeBy(-MOBILE_STEP)}
+                aria-label="Bajar volumen"
+              >
+                −
+              </button>
 
-          <span className="music-volume-value">
-            {Math.round(volume * 100)}%
-          </span>
+              <span className="music-volume-pill">
+                {Math.round(volume * 100)}%
+              </span>
+
+              <button
+                type="button"
+                className="music-volume-step-btn"
+                onClick={() => changeVolumeBy(MOBILE_STEP)}
+                aria-label="Subir volumen"
+              >
+                +
+              </button>
+
+              <button
+                type="button"
+                className={`music-mute-btn ${isMuted ? "muted" : ""}`}
+                onClick={toggleMute}
+                aria-label={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+              >
+                {isMuted ? "🔇" : "🔊"}
+              </button>
+            </div>
+          ) : (
+            <>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="music-volume-slider"
+                aria-label="Control de volumen"
+              />
+
+              <span className="music-volume-value">
+                {Math.round(volume * 100)}%
+              </span>
+
+              <button
+                type="button"
+                className={`music-mute-btn desktop ${isMuted ? "muted" : ""}`}
+                onClick={toggleMute}
+                aria-label={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+              >
+                {isMuted ? "🔇" : "🔊"}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </>
