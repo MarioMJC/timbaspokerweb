@@ -21,7 +21,7 @@ export const HOME_STREAMS: HomeStreamsConfig = {
     timeLabel: "",
     platformLabel: "KICK",
     href: "https://kick.com/timbaspoker",
-    title: "PRÓXIMO DIRECTO: 12 de Marzo a las 16:30h",
+    title: "PRÓXIMO DIRECTO: 11 de Marzo a las 16:30h",
     targets: ["JORNADA 9 SPRING SEASON", "JORNADA 30 ANUAL"],
     note: "Todos los fines de semana directo en Kick.",
   },
