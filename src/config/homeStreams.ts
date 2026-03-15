@@ -21,7 +21,7 @@ export const HOME_STREAMS: HomeStreamsConfig = {
     timeLabel: "",
     platformLabel: "KICK",
     href: "https://kick.com/timbaspoker",
-    title: "PRÓXIMO DIRECTO: Pendiente de fecha y hora",
+    title: "PRÓXIMO DIRECTO: HOY 15-03-2026 a las 21:00 hora ESPAÑOLA en KICK",
     targets: ["JORNADA 10 SPRING SEASON", "JORNADA 31 ANUAL"],
     note: "Todos los fines de semana directo en Kick.",
   },
