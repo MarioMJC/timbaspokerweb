@@ -53,13 +53,13 @@ export default function SiteHeader({ buyIn, pot }: Props) {
       <div className="last-stream-banner">
         <span>PRÓXIMO DIRECTO</span>
         <span>/</span>
-        <span>HOY 15-03-2026 A LAS 21:00 HORA ESPAÑOLA</span>
+        <span>PENDIENTE</span>
         <span>/</span>
         <span>EN KICK</span>
         <span>/</span>
-        <span>JORNADA 10 SPRING SEASON</span>
+        <span>JORNADA 11 SPRING SEASON</span>
         <span>/</span>
-        <span>JORNADA 31 ANUAL</span>
+        <span>JORNADA 32 ANUAL</span>
       </div>
 
       <p className="title-submessage">

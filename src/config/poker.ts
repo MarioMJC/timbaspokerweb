@@ -230,6 +230,11 @@ export const MATCHDAY_MEDIA: Record<number, {
     winnerImage: "/matchdays/annual/jornada-30/winner.jpg",
     finalHandImage: "/matchdays/annual/jornada-30/final-hand.jpg",
   },
+
+  31: {
+    winnerImage: "/matchdays/annual/jornada-31/winner.jpg",
+    finalHandImage: "/matchdays/annual/jornada-31/final-hand.jpg",
+  },
 };
 
 export function getAnnualMatchdayFromSeason(
